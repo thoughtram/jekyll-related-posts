@@ -11,5 +11,8 @@
   "dependencies": {
     "js-yaml": "^3.6.1",
     "lodash": "^4.16.6"
+  },
+  "bin": {
+    "jrp": "index.js"
   }
 }
