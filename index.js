@@ -1,7 +1,9 @@
 #! /usr/bin/env node
 
-const YamlFs = require('./yamlFs.js');
+const Rx = require('@reactivex/rxjs');
+const YamlFs = require('yaml-fs').YamlFs;
 const Analyzer = require('./analyzer.js');
+const CastsAnalyzer = require('./castsAnalyzer.js');
 
 let yamlFs = new YamlFs();
 
@@ -14,9 +16,26 @@ let directory = process.argv[2];
 
 yamlFs.getMetaDataForFiles(directory)
   .then(metaDataList => {
+
     let analyzer = new Analyzer(metaDataList);
-    analyzer.process((fileMetaData, relatedPostsMetaData) => {
-      fileMetaData.yamlProperties.related_posts = relatedPostsMetaData.map(fileMetaData => fileMetaData.yamlProperties.title);
-      yamlFs.writeFile(fileMetaData)
-    });
-  })
+    let castsAnalzyer = new CastsAnalyzer();
+
+    Rx.Observable
+      .from(metaDataList)
+      .flatMap(fileMetaData => {
+        return Rx.Observable.forkJoin(
+          castsAnalzyer.getRelatedVideos(fileMetaData),
+          analyzer.getRelatedPosts(fileMetaData)
+        ).map(related => {
+          [relatedVideos, relatedPosts] = related;
+          fileMetaData.yamlProperties.related_posts = relatedPosts;
+
+          if (!fileMetaData.yamlProperties.no_related_videos) {
+            fileMetaData.yamlProperties.related_videos = relatedVideos;
+          }
+          return fileMetaData;
+        })
+      }, 4).subscribe(fileMetaData => {
+        yamlFs.writeFile(fileMetaData);
+      });
+  });

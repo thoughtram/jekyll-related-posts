@@ -9,8 +9,10 @@
   "author": "Christoph Burgdorf <christoph.burgdorf@bvsn.org> (http://cburgdorf.wordpress.com/)",
   "license": "MIT",
   "dependencies": {
+    "@reactivex/rxjs": "^5.0.0-rc.2",
     "js-yaml": "^3.6.1",
-    "lodash": "^4.16.6"
+    "lodash": "^4.16.6",
+    "yaml-fs": "git+https://github.com/thoughtram/yaml-fs.git#5cc1615"
   },
   "bin": {
     "jrp": "index.js"

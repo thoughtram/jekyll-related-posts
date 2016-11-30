@@ -1,4 +1,5 @@
 const _    = require('lodash');
+const Rx = require('@reactivex/rxjs');
 
 module.exports = class Analyzer {
 
@@ -16,19 +17,12 @@ module.exports = class Analyzer {
   }
 
   getRelatedPosts (fileMetaData) {
-    return this.sortByMatchingTagsAndDate(fileMetaData.yamlProperties.tags)
-                        .filter(fMetaData => fMetaData !== fileMetaData)
-                        .slice(0, 6);
-  }
-
-  advance (fn) {
-    this.metaDataList.forEach(fn);
-  }
-
-  process (fn) {
-    this.advance(fileMetaData => {
-      let relatedPosts = this.getRelatedPosts(fileMetaData);
-      fn(fileMetaData, relatedPosts);
+    return new Rx.Observable(obs => {
+      obs.next(this.sortByMatchingTagsAndDate(fileMetaData.yamlProperties.tags)
+                          .filter(fMetaData => fMetaData !== fileMetaData)
+                          .map(fileMetaData => fileMetaData.yamlProperties.title)
+                          .slice(0, 6));
+      obs.complete();
     });
   }
 }
