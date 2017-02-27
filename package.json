@@ -13,7 +13,7 @@
     "js-yaml": "^3.6.1",
     "lodash": "^4.16.6",
     "request": "^2.79.0",
-    "yaml-fs": "git+https://github.com/thoughtram/yaml-fs.git#5cc1615"
+    "yaml-fs": "git+https://github.com/thoughtram/yaml-fs.git#102a162"
   },
   "bin": {
     "jrp": "index.js"
